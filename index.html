@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — A collection of designed moments</title>
+  <meta name="description" content="A quiet archive of interaction, product and visual design." />
+  <style>
+    :root { --paper:#f7f7f7; --ink:#111111; --muted:#a0a0a0; --line:rgba(17,17,17,.14); --ease:cubic-bezier(.22,.8,.2,1); }
+    * { box-sizing:border-box; }
+    html,body { margin:0; min-height:100%; background:var(--paper); color:var(--ink); font-family:Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    body { overflow-x:hidden; }
+    button { font:inherit; color:inherit; }
+    .topbar { position:fixed; top:0; left:0; right:0; z-index:20; display:flex; justify-content:space-between; align-items:center; padding:24px 32px; mix-blend-mode:multiply; letter-spacing:.02em; }
+    .mark { font-size:15px; font-weight:700; letter-spacing:-.04em; }
+    .nav { display:flex; align-items:center; gap:23px; font-size:12px; }
+    .nav button { border:0; background:none; padding:3px 0; cursor:pointer; border-bottom:1px solid transparent; }
+    .nav button:hover { border-color:var(--ink); }
+    .hero { min-height:100vh; padding:126px 32px 34px; position:relative; overflow:hidden; background:#f7f7f7; }
+    .intro { position:absolute; left:18%; top:52%; transform:translateY(-50%); width:min(36vw,500px); max-width:500px; }
+    .eyebrow { margin:0 0 12px; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+    h1 { margin:0; max-width:none; font-size:clamp(32px,3.7vw,64px); line-height:.96; letter-spacing:0; font-weight:700; color:#111; }
+    .identity-name, .identity-role { display:block; }
+    .identity-role { color:#a4a4a4; white-space:nowrap; }
+    .contact-actions { display:flex; gap:9px; margin-top:58px; }
+    .contact-actions button { width:68px; height:68px; border:0; border-radius:20px; background:#fff; display:grid; place-items:center; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,.035); transition:transform .3s var(--ease), box-shadow .3s ease; }
+    .contact-actions button:hover { transform:translateY(-3px); box-shadow:0 13px 26px rgba(0,0,0,.08); }
+    .contact-actions svg { width:26px; height:26px; fill:none; stroke:#171717; stroke-width:2.1; stroke-linecap:round; stroke-linejoin:round; }
+    .intro-note { max-width:240px; margin:0 2px 4px 0; color:#5e5b56; font-size:12px; line-height:1.55; }
+    .gallery { position:absolute; right:7vw; top:50%; transform:translateY(-50%); width:min(34vw,560px); height:96vh; min-height:620px; perspective:900px; perspective-origin:center center; }
+    .card { --slot:0; --stack-y:0px; --scale:1; --opacity:1; --face-opacity:1; --rotate:0deg; --fold:0deg; --mx:0px; --my:0px; position:absolute; left:50%; top:50%; width:clamp(250px,19vw,480px); aspect-ratio:1; height:auto; border:0; border-radius:28px; padding:0; background:#e7e7e7; overflow:hidden; cursor:pointer; transform:translate(-50%,-50%) translateY(var(--stack-y)) scale(var(--scale)) rotate(var(--rotate)) rotateX(var(--fold)); transform-origin:center center; transform-style:preserve-3d; backface-visibility:hidden; will-change:transform,opacity; opacity:var(--opacity); transition:transform .9s var(--ease), opacity .65s ease, box-shadow .45s var(--ease), filter .5s ease; box-shadow:0 12px 32px rgba(0,0,0,.08); }
+    .card.is-active { z-index:10; box-shadow:0 24px 60px rgba(0,0,0,.16); transform-origin:center center; }
+    .card:not(.is-active) { box-shadow:none; background:#e5e5e5; }
+    .card img { width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.9); opacity:var(--face-opacity); transform:translate(var(--mx),var(--my)) scale(1.02); transition:transform .12s ease-out, opacity .82s var(--ease), filter .6s ease; }
+    .card .shade, .card .card-meta { opacity:var(--face-opacity); transition:opacity .82s var(--ease); }
+    .card:hover { z-index:12; box-shadow:0 24px 60px rgba(0,0,0,.2); animation:none; }
+    @keyframes sway { 0%,100%{ transform:translateY(-3%) rotate(-2.7deg); } 50%{ transform:translateY(-3%) rotate(2.7deg); } }
+    .card:hover img { filter:saturate(.9); }
+    .shade { position:absolute; inset:0; background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.64)); pointer-events:none; }
+    .card-meta { position:absolute; left:15px; right:15px; bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; color:white; text-align:left; }
+    .card-title { font-size:12px; line-height:1.2; letter-spacing:.01em; }
+    .card-index { font-size:10px; opacity:.75; }
+    .footer { display:none; }
+    .footer span:last-child { text-transform:uppercase; letter-spacing:.12em; }
+    .modal { position:fixed; inset:0; z-index:30; display:grid; place-items:center; padding:30px; background:rgba(15,15,15,.46); opacity:0; pointer-events:none; transition:opacity .45s ease; }
+    .modal.open { opacity:1; pointer-events:auto; }
+    .modal-card { position:relative; width:min(74vw,720px); height:min(82vh,820px); background:#e8e6e1; overflow:hidden; transform:scale(.93); transition:transform .6s var(--ease); }
+    .modal.open .modal-card { transform:scale(1); }
+    .modal.detail-open { padding:0; background:#e8e6e1; }
+    .modal-card.detail-open { position:fixed; inset:0; width:100vw; height:100vh; transform:none !important; }
+    .modal-card.detail-open .modal-close { top:24px; right:28px; z-index:5; }
+    .modal-card.detail-open .modal-cover { display:none; }
+    .modal-cover { height:100%; width:100%; object-fit:cover; display:block; transition:opacity .4s ease; }
+    .detail { position:absolute; inset:0; display:flex; flex-direction:column; background:transparent; opacity:0; transform:translateY(20px); pointer-events:none; transition:opacity .5s ease, transform .5s var(--ease); }
+    .detail.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+    .detail-gallery { position:absolute; inset:0; overflow:hidden; perspective:1100px; }
+    .detail-dots { position:absolute; z-index:4; right:28px; top:50%; display:flex; flex-direction:column; align-items:center; gap:11px; transform:translateY(-50%); }
+    .detail-dot { width:6px; height:6px; padding:0; border:0; border-radius:50%; background:#cfcfcf; cursor:pointer; transition:background .3s ease, transform .3s ease, opacity .3s ease; opacity:.9; }
+    .detail-dot.is-active { background:#111; transform:scale(1.12); opacity:1; }
+    .detail-card { position:absolute; left:50%; top:50%; width:max-content; height:max-content; margin:0; background:#e7e7e7; border-radius:28px; opacity:var(--detail-opacity,1); transform:translate(-50%,-50%) translateY(var(--detail-y,0px)) scale(var(--detail-scale,1)) rotate(var(--detail-rotate,0deg)) rotateX(var(--detail-fold,0deg)); transform-origin:var(--detail-origin,center center); transform-style:preserve-3d; backface-visibility:hidden; transition:transform .72s var(--ease), opacity .58s ease, filter .58s ease; will-change:transform,opacity; pointer-events:none; }
+    .detail-card img { display:block; width:auto; height:auto; max-width:82vw; max-height:78vh; object-fit:contain; border-radius:28px; opacity:var(--detail-face-opacity,1); transition:opacity .3s ease; box-shadow:0 24px 70px rgba(0,0,0,.16); }
+    .detail-head, .detail-body { display:none !important; }
+    .detail-head { display:flex; justify-content:space-between; padding:26px 28px 20px; border-bottom:1px solid var(--line); flex:none; }
+    .detail h2 { margin:0; font-size:29px; font-weight:500; letter-spacing:-.05em; }
+    .detail small { color:var(--muted); font-size:11px; }
+    .detail-body { padding:30px 28px 80px; overflow:auto; font-size:15px; line-height:1.7; }
+    .detail-body p { max-width:540px; margin:0 0 24px; }
+    .detail-body .label { margin-top:36px; margin-bottom:9px; font-size:10px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
+    @media (max-width:800px){ .detail-dots{right:14px;gap:9px}.detail-dot{width:5px;height:5px} }
+    .modal-close, .modal-switch { position:absolute; top:16px; z-index:2; border:0; width:36px; height:36px; border-radius:50%; background:rgba(232,230,225,.84); cursor:pointer; }
+    .modal-close { right:16px; font-size:20px; line-height:1; } .modal-switch { left:16px; font-size:15px; }
+    .hint { position:absolute; left:50%; bottom:56px; width:28px; height:28px; border:3px solid #fff; border-radius:50%; transform:translateX(-50%) scale(1); opacity:.82; pointer-events:none; animation:hint-breathe 2.4s ease-in-out infinite; box-sizing:border-box; }
+    .hint::after { content:""; position:absolute; left:50%; top:50%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); }
+    @keyframes hint-breathe { 0%,100% { transform:translateX(-50%) scale(.9); opacity:.28; } 50% { transform:translateX(-50%) scale(1.045); opacity:1; } }
+    .profile { position:fixed; inset:0; z-index:25; background:var(--paper); padding:110px 32px 42px; opacity:0; pointer-events:none; transform:translateY(18px); transition:opacity .5s ease,transform .5s var(--ease); }
+    .profile.open { opacity:1; pointer-events:auto; transform:translateY(0); }
+    .profile-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:8vw; height:100%; align-items:end; }
+    .profile h2 { max-width:650px; margin:0 0 28px; font-size:clamp(44px,7vw,104px); line-height:.87; letter-spacing:-.08em; font-weight:500; }
+    .profile-copy { max-width:360px; font-size:16px; line-height:1.65; color:#55514b; }
+    .profile-meta { display:grid; grid-template-columns:1fr 1fr; gap:26px; border-top:1px solid var(--line); padding-top:14px; font-size:12px; color:#55514b; }
+    .profile-meta b { display:block; color:var(--ink); font-weight:500; margin-bottom:7px; }
+    .profile-close { border:0; background:none; padding:0; cursor:pointer; font-size:12px; border-bottom:1px solid var(--ink); }
+    @media (max-width:800px){ .topbar{padding:18px 19px}.hero{padding:100px 19px 24px}.intro{left:19px;top:18%;width:80vw;max-width:none;transform:none}.intro-note{display:none}.gallery{right:7vw;top:57%;width:66vw;height:78vh;min-height:430px}.card{width:54vw;aspect-ratio:1}.card{transform:translate(-50%,-50%) translateY(var(--stack-y)) scale(var(--scale)) rotate(var(--rotate)) rotateX(var(--fold))}.card-meta{left:9px;right:9px;bottom:9px}.card-title{font-size:9px}.card-index{font-size:8px}.modal{padding:12px}.modal-card{width:100%;height:84vh}.profile{padding:92px 20px 28px}.profile-grid{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:30px}.profile h2{font-size:58px}.profile-copy{font-size:14px}.nav{gap:13px}.footer{position:absolute;left:19px;right:19px;bottom:24px} }
+    /* cursor parallax belongs to the whole active card, not its image */
+    .card { left:50%; top:50%; translate:var(--mx) var(--my); will-change:transform,translate,opacity; transition:translate .1s ease-out, transform .9s var(--ease), opacity .65s ease, box-shadow .45s var(--ease), filter .5s ease; }
+    .card img { transform:scale(1.02); transition:opacity .82s var(--ease), filter .6s ease; }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="mark">/ JIANHAO · LI</div><nav class="nav"><button id="profileOpen">ABOUT / 个人</button></nav></header>
+  <main class="hero">
+    <section class="intro"><h1><span class="identity-name">Li Jianhao’s</span><span class="identity-role">Personal Portfolio</span></h1><div class="contact-actions"><button aria-label="个人介绍" id="identityProfile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19c.7-3.3 3-5 6.5-5s5.8 1.7 6.5 5"/></svg></button><button aria-label="联系"><svg viewBox="0 0 24 24"><path d="M5 6.5h14v9H9l-4 3v-12Z"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01"/></svg></button></div></section>
+    <section class="gallery" id="gallery" aria-label="作品集"></section>
+    <footer class="footer"><span>Scroll to explore · Hover to feel</span><span>Works / 08</span></footer>
+  </main>
+  <section class="profile" id="profile"><button class="profile-close" id="profileClose">CLOSE ×</button><div class="profile-grid"><div><p class="eyebrow">A little about me</p><h2>观察，<br/>提问，<br/>再设计。</h2></div><div><p class="profile-copy">我是 Chen Yi，一名关注产品、交互与社会创新的设计师。喜欢从日常的细节里发现问题，再把复杂的事情变得自然、清晰而有温度。</p><div class="profile-meta"><div><b>Based in</b>Hangzhou / China</div><div><b>Focus</b>Product · Interaction<br/>Visual · Research</div></div></div></div></section>
+  <div class="modal" id="modal"><div class="modal-card"><button class="modal-close" id="modalClose">×</button><img class="modal-cover" id="modalCover" alt=""/><div class="hint" id="modalHint" aria-label="点击图片"></div><section class="detail" id="detail"><div class="detail-gallery" id="detailGallery"></div><div class="detail-dots" id="detailDots" aria-label="项目图片页码"></div></section></div></div>
+  <script>
+    const works=[
+      {title:'AI-Powered',cn:'AI 驱动设计',img:'AI-Powered.png',type:'AI / Interaction',text:'研究生成式工具如何进入设计过程，并在效率之外，保留判断、表达与人的参与感。',year:'2026'},
+      {title:'Agents',cn:'智能管家',img:'Agents.png',type:'AI / Service',text:'围绕智能代理、工作流和人与系统的协作关系展开的探索。关注技术如何变得更自然、更容易被理解。',year:'2026'},
+      {title:'Sustainable Design',cn:'可持续设计',img:'Sustainable Design.png',type:'Material / System',text:'从材料的生命周期开始设计。关注可拆解、可替换与可持续使用的关系，让产品在被使用之后依然拥有下一种可能。',year:'2024'},
+      {title:'Sedentary Monitoring',cn:'智能坐姿监测座椅',img:'Sedentary Monitoring.png',type:'Product / Wellness',text:'重新思考“提醒”这件事。让座椅通过身体姿态的变化理解用户，在不打断专注的前提下，给出更自然的健康反馈。',year:'2025'},
+      {title:'Gamified Rehabilitation',cn:'游戏化康复手套',img:'Gamified Rehabilitation.png',type:'Interaction / Healthcare',text:'把康复训练变成一件愿意重复的事。通过手部动作捕捉、即时反馈与轻量化的游戏机制，让枯燥的训练过程变得更像一次探索。',year:'2025'},
+      {title:'Interactive Innovation',cn:'交互创新',img:'Interactive Innovation.png',type:'AI / Interaction',text:'面向沟通障碍人群的智能辅助工具。让表达不再需要一次完成，系统在理解、提示与陪伴之间，留出足够的安全感。',year:'2025'},
+      {title:'Intangible Cultural Heritage',cn:'景泰蓝瑞兽 IP',img:'Intangible Cultural Heritage.png',type:'Culture / Product',text:'从传统纹样与瑞兽意象出发，为当代生活重新组织一套可以被亲近、被使用的文化语言。',year:'2024'},
+      {title:'Other Works',cn:'其他作品',img:'Other Works.png',type:'Selected experiments',text:'一些关于材料、图形、界面与生活观察的短篇练习。每个小作品都是一次快速的提问，也是一种保持好奇的方法。',year:'2024—26'}
+    ];
+    const detailFiles={
+      'AI-Powered':Array.from({length:17},(_,i)=>`${i+3}.png`),
+      'Agents':Array.from({length:10},(_,i)=>`${i+20}.png`),
+      'Sustainable Design':Array.from({length:12},(_,i)=>`${i+30}.png`),
+      'Sedentary Monitoring':Array.from({length:16},(_,i)=>`${i+42}.png`),
+      'Gamified Rehabilitation':Array.from({length:8},(_,i)=>`${i+58}.png`),
+      'Interactive Innovation':Array.from({length:5},(_,i)=>`${i+66}.png`),
+      'Intangible Cultural Heritage':Array.from({length:19},(_,i)=>`${i+1}.png`),
+      'Other Works':['862146525.png','862146526.png','Frame 2053140616.png']
+    };
+    const detailDirs={'AI-Powered':'ai-powered','Agents':'agents','Sustainable Design':'sustainable-design','Sedentary Monitoring':'sedentary-monitoring','Gamified Rehabilitation':'gamified-rehabilitation','Interactive Innovation':'interactive-innovation','Intangible Cultural Heritage':'intangible-cultural-heritage','Other Works':'other-works'};
+    const gallery=document.querySelector('#gallery'); const modal=document.querySelector('#modal'); const cover=document.querySelector('#modalCover'); const detail=document.querySelector('#detail'); const detailGallery=document.querySelector('#detailGallery'); const detailDots=document.querySelector('#detailDots'); const hint=document.querySelector('#modalHint'); let active=0; let detailCards=[]; let detailIndex=0; let detailQueue=0; let detailTimer=null; let detailFadeTimer=null;
+    const cards=[]; works.forEach((w,i)=>{const b=document.createElement('button');b.className='card';b.innerHTML=`<img src="assets/${w.img}" alt="${w.cn}"/><span class="shade"></span><span class="card-meta"><span class="card-title">${w.cn}<br/><i>${w.title}</i></span></span>`;b.addEventListener('click',()=>i===active?openWork(i):setActive(i));b.addEventListener('pointermove',e=>{if(i!==active)return;const r=b.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;b.style.setProperty('--mx',`${(-x*8).toFixed(2)}px`);b.style.setProperty('--my',`${(-y*8).toFixed(2)}px`)});b.addEventListener('pointerleave',()=>{b.style.setProperty('--mx','0px');b.style.setProperty('--my','0px')});gallery.appendChild(b);cards.push(b)});
+    function setActive(next){const previous=active;const target=(next+works.length)%works.length;active=target;cards.forEach((card,i)=>{let oldD=i-previous;if(oldD>works.length/2)oldD-=works.length;if(oldD<-works.length/2)oldD+=works.length;let d=i-active;if(d>works.length/2)d-=works.length;if(d<-works.length/2)d+=works.length;const distance=Math.abs(d);const base=window.innerWidth<800?160:(window.innerWidth<1200?220:320);const step=window.innerWidth<800?34:(window.innerWidth<1200?48:56);const stackY=d===0?0:(d<0?-(base+distance*step):(base+distance*step));const origin=d===0?(oldD<0?'center bottom':oldD>0?'center top':'center center'):(d<0?'center bottom':'center top');card.style.setProperty('--slot',d);card.style.setProperty('--stack-y',`${stackY}px`);card.style.setProperty('--scale',d===0?1:Math.max(.84,1-distance*.035));card.style.setProperty('--opacity',distance>2?0:(d===0?1:Math.max(.5,1-distance*.16)));card.style.setProperty('--face-opacity',distance>2?0:(d===0?1:0));card.style.setProperty('--rotate',d===0?'0deg':`${d%2?1:-1}deg`);card.style.setProperty('--fold',d===0?'0deg':`${d<0?-84:84}deg`);card.style.transformOrigin=origin;card.style.zIndex=d===0?100:20-distance;card.style.pointerEvents=distance>2?'none':'auto';card.classList.toggle('is-active',d===0);if(d===0&&oldD!==0)setTimeout(()=>{if(active===target)card.style.transformOrigin='center center'},950)})}
+    function positionDetailCards(showTransition=false){const total=detailCards.length;if(!total)return;detailCards.forEach((card,i)=>{let d=i-detailIndex;if(d>total/2)d-=total;if(d<-total/2)d+=total;const distance=Math.abs(d);const isActive=d===0;const isTransitionCard=showTransition&&distance===1;const spread=Math.min(window.innerHeight*.38,300);const y=isActive?0:(d<0?-(spread+distance*42):(spread+distance*42));card.style.setProperty('--detail-y',`${y}px`);card.style.setProperty('--detail-scale',isActive?1:Math.max(.82,1-distance*.04));card.style.setProperty('--detail-opacity',isActive?1:(isTransitionCard?.2:0));card.style.setProperty('--detail-face-opacity',isActive?1:0);card.style.setProperty('--detail-rotate',isActive?'0deg':`${d%2?1:-1}deg`);card.style.setProperty('--detail-fold',isActive?'0deg':`${d<0?-84:84}deg`);card.style.setProperty('--detail-origin',d<0?'center bottom':d>0?'center top':'center center');card.style.zIndex=isActive?100:20-distance;card.style.pointerEvents=isActive?'auto':'none'})}
+    function updateDetailDots(){detailDots.querySelectorAll('.detail-dot').forEach((dot,i)=>dot.classList.toggle('is-active',i===detailIndex))}
+    function renderDetailDots(total){detailDots.innerHTML=Array.from({length:total},(_,i)=>`<button class="detail-dot${i===0?' is-active':''}" aria-label="第 ${i+1} 张图片"></button>`).join('');detailDots.querySelectorAll('.detail-dot').forEach((dot,i)=>dot.addEventListener('click',e=>{e.stopPropagation();detailIndex=i;positionDetailCards(true);updateDetailDots();clearTimeout(detailFadeTimer);detailFadeTimer=setTimeout(()=>positionDetailCards(false),780)}))}
+    function renderDetailCards(work){const files=detailFiles[work.title]||[];const dir=detailDirs[work.title];detailGallery.innerHTML=files.map((file,i)=>`<figure class="detail-card" data-detail-index="${i}"><img src="assets/details/${dir}/${file}" alt="${work.cn} ${i+1}"/></figure>`).join('');detailCards=Array.from(detailGallery.querySelectorAll('.detail-card'));detailIndex=0;renderDetailDots(detailCards.length);positionDetailCards()}
+    function advanceDetail(direction){if(!detailCards.length)return;detailIndex=(detailIndex+direction+detailCards.length)%detailCards.length;positionDetailCards(true);updateDetailDots();clearTimeout(detailFadeTimer);detailFadeTimer=setTimeout(()=>positionDetailCards(false),780)}
+    function consumeDetailWheel(){if(Math.abs(detailQueue)<12){detailQueue=0;detailTimer=null;return}const direction=detailQueue>0?1:-1;detailQueue=0;advanceDetail(direction);detailTimer=setTimeout(consumeDetailWheel,220)}
+    detail.addEventListener('wheel',e=>{if(!detail.classList.contains('show'))return;e.preventDefault();detailQueue+=e.deltaY;if(!detailTimer)consumeDetailWheel()},{passive:false});
+    window.addEventListener('resize',()=>{if(detail.classList.contains('show'))positionDetailCards()});
+    setActive(0);
+    let wheelQueue=0, wheelTimer=null;
+    function consumeWheel(){
+      if(Math.abs(wheelQueue)<12){wheelQueue=0;wheelTimer=null;return}
+      const direction=wheelQueue>0?1:-1;
+      wheelQueue=0;
+      setActive(active+direction);
+      wheelTimer=setTimeout(consumeWheel,220);
+    }
+    gallery.addEventListener('wheel',e=>{
+      e.preventDefault();
+      wheelQueue+=e.deltaY;
+      if(!wheelTimer) consumeWheel();
+    },{passive:false});
+    window.addEventListener('keydown',e=>{if(modal.classList.contains('open')||document.querySelector('#profile').classList.contains('open'))return;if(e.key==='ArrowDown'||e.key==='ArrowRight')setActive(active+1);if(e.key==='ArrowUp'||e.key==='ArrowLeft')setActive(active-1)});
+    function openWork(i){active=i;const w=works[i];cover.src=`assets/${w.img}`;cover.alt=w.cn;renderDetailCards(w);detail.classList.remove('show');modal.classList.remove('detail-open');document.querySelector('.modal-card').classList.remove('detail-open');hint.style.display='block';modal.classList.add('open');document.body.style.overflow='hidden'}
+    document.querySelector('.modal-card').addEventListener('click',e=>{if(detail.classList.contains('show')||e.target.closest('#modalClose'))return;detail.classList.add('show');modal.classList.add('detail-open');document.querySelector('.modal-card').classList.add('detail-open');hint.style.display='none'});document.querySelector('#modalClose').onclick=()=>{modal.classList.remove('open','detail-open');document.querySelector('.modal-card').classList.remove('detail-open');document.body.style.overflow=''};modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open','detail-open');document.querySelector('.modal-card').classList.remove('detail-open');document.body.style.overflow=''}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal.classList.remove('open','detail-open');document.querySelector('.modal-card').classList.remove('detail-open');document.querySelector('#profile').classList.remove('open');document.body.style.overflow=''}});
+    const showProfile=()=>{document.querySelector('#profile').classList.add('open');document.body.style.overflow='hidden'};document.querySelector('#profileOpen').onclick=showProfile;document.querySelector('#identityProfile').onclick=showProfile;document.querySelector('#profileClose').onclick=()=>{document.querySelector('#profile').classList.remove('open');document.body.style.overflow=''};
+  </script>
+</body>
+</html>
