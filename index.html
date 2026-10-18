@@ -215,13 +215,23 @@
     const profileIntro = document.querySelector('.intro');
     const profileContent = document.querySelector('.profile-content');
     let introHomePosition = profileIntro ? profileIntro.nextSibling : null;
+    const resetWorkOverlay = () => {
+      const workModal = document.querySelector('#modal');
+      const workDetail = document.querySelector('#detail');
+      const workCard = document.querySelector('.modal-card');
+      workModal?.classList.remove('open', 'detail-open');
+      workDetail?.classList.remove('show');
+      workCard?.classList.remove('detail-open');
+    };
     const openProfileView = () => {
+      resetWorkOverlay();
       if (profileIntro && profileContent && profileIntro.parentElement !== profileContent) profileContent.prepend(profileIntro);
       document.querySelector('#profile').classList.add('open');
       document.body.classList.add('profile-mode');
       document.body.style.overflow = 'hidden';
     };
     const closeProfileView = () => {
+      resetWorkOverlay();
       document.querySelector('#profile').classList.remove('open');
       document.body.classList.remove('profile-mode');
       document.body.style.overflow = '';
