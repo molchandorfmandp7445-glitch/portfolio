@@ -236,7 +236,7 @@
       document.body.classList.remove('profile-mode');
       document.body.style.overflow = '';
       if (profileIntro && profileHero && profileIntro.parentElement !== profileHero) {
-        window.setTimeout(() => profileHero.insertBefore(profileIntro, profileHero.firstChild), 900);
+        profileHero.insertBefore(profileIntro, profileHero.firstChild);
       }
     };
     const profileTabs = Array.from(document.querySelectorAll('.profile-tabs span')).map(tab => { const button = document.createElement('button'); button.type = 'button'; button.textContent = tab.textContent; tab.replaceWith(button); return button; });
