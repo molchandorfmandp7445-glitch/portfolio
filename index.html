@@ -49,8 +49,8 @@
     body.profile-mode #identityProfile::after { content:'×'; position:absolute; width:100%; height:100%; display:grid; place-items:center; color:#fff; font-size:34px; font-weight:300; line-height:1; }
     body.profile-mode #identityProfile:hover { transform:rotate(360deg) translateY(-3px); }
     .card { --slot:0; --stack-y:0px; --scale:1; --opacity:1; --face-opacity:1; --rotate:0deg; --fold:0deg; --mx:0px; --my:0px; position:absolute; left:50%; top:50%; width:clamp(250px,19vw,480px); aspect-ratio:1; height:auto; border:0; border-radius:28px; padding:0; background:#e7e7e7; overflow:hidden; cursor:pointer; transform:translate(-50%,-50%) translateY(var(--stack-y)) scale(var(--scale)) rotate(var(--rotate)) rotateX(var(--fold)); transform-origin:center center; transform-style:preserve-3d; backface-visibility:hidden; will-change:transform,opacity; opacity:var(--opacity); transition:transform .9s var(--ease), opacity .65s ease, box-shadow .45s var(--ease), filter .5s ease; box-shadow:0 12px 32px rgba(0,0,0,.08); }
-    .card.is-active { z-index:10; box-shadow:0 24px 60px rgba(0,0,0,.16); transform-origin:center center; scale:1; animation:card-breathe 4.8s ease-in-out infinite; }
-    @keyframes card-breathe { 0%,100%{scale:1} 50%{scale:1.035} }
+    .card.is-active { z-index:10; box-shadow:0 24px 60px rgba(0,0,0,.16); transform-origin:center center; scale:1; animation:card-breathe 3.6s ease-in-out infinite; }
+    @keyframes card-breathe { 0%,100%{scale:1} 50%{scale:1.018} }
     @media (prefers-reduced-motion:reduce){ .card.is-active{animation:none} }
     .card:not(.is-active) { box-shadow:none; background:#e5e5e5; }
     .card img { width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.9); opacity:var(--face-opacity); transform:translate(var(--mx),var(--my)) scale(1.02); transition:transform .12s ease-out, opacity .82s var(--ease), filter .6s ease; }
