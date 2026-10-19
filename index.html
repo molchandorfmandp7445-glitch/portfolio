@@ -66,8 +66,8 @@
     .modal.open { opacity:1; pointer-events:auto; }
     .modal-card { position:relative; width:min(74vw,720px); height:min(82vh,820px); background:#e8e6e1; overflow:hidden; transform:scale(.93); transition:transform .6s var(--ease); }
     .modal.open .modal-card { transform:scale(1); }
-    .modal.detail-open { padding:0; background:#e8e6e1; }
-    .modal-card.detail-open { position:fixed; inset:0; width:100vw; height:100vh; transform:none !important; }
+    .modal.detail-open { padding:0; background:#e8e6e1; touch-action:none; overscroll-behavior:none; }
+    .modal-card.detail-open { position:fixed; inset:0; width:100vw; height:100vh; transform:none !important; touch-action:none; }
     .modal-card.detail-open .modal-close { top:24px; right:28px; z-index:5; }
     .modal-card.detail-open .modal-cover { display:none; }
     .modal-cover { height:100%; width:100%; object-fit:cover; display:block; transition:opacity .4s ease; }
@@ -193,6 +193,7 @@
     detailGallery.addEventListener('touchstart',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];detailTouchStartX=touch.clientX;detailTouchStartY=touch.clientY;detailTouchLocked=false},{passive:false});
     detailGallery.addEventListener('touchmove',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];const deltaX=touch.clientX-detailTouchStartX;const deltaY=touch.clientY-detailTouchStartY;if(Math.abs(deltaY)>Math.abs(deltaX)&&Math.abs(deltaY)>8){detailTouchLocked=true;e.preventDefault()}},{passive:false});
     detailGallery.addEventListener('touchend',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];const deltaX=touch.clientX-detailTouchStartX;const deltaY=touch.clientY-detailTouchStartY;if(detailTouchLocked&&Math.abs(deltaY)>36&&Math.abs(deltaY)>Math.abs(deltaX)){advanceDetail(deltaY<0?1:-1)}},{passive:false});
+    document.addEventListener('touchmove',e=>{if(detail.classList.contains('show'))e.preventDefault()},{passive:false});
     window.addEventListener('resize',()=>{if(detail.classList.contains('show'))positionDetailCards()});
     setActive(0);
     let wheelQueue=0, wheelTimer=null;
