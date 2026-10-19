@@ -189,9 +189,10 @@
     function advanceDetail(direction){if(!detailCards.length)return;detailIndex=(detailIndex+direction+detailCards.length)%detailCards.length;ensureDetailImages();positionDetailCards(true);updateDetailDots();clearTimeout(detailFadeTimer);detailFadeTimer=setTimeout(()=>positionDetailCards(false),780)}
     function consumeDetailWheel(){if(Math.abs(detailQueue)<12){detailQueue=0;detailTimer=null;return}const direction=detailQueue>0?1:-1;detailQueue=0;advanceDetail(direction);detailTimer=setTimeout(consumeDetailWheel,220)}
     detail.addEventListener('wheel',e=>{if(!detail.classList.contains('show'))return;e.preventDefault();detailQueue+=e.deltaY;if(!detailTimer)consumeDetailWheel()},{passive:false});
-    let detailTouchStartX=0,detailTouchStartY=0;
-    detail.addEventListener('touchstart',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];detailTouchStartX=touch.clientX;detailTouchStartY=touch.clientY},{passive:true});
-    detail.addEventListener('touchend',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];const deltaX=touch.clientX-detailTouchStartX;const deltaY=touch.clientY-detailTouchStartY;if(Math.abs(deltaY)>36&&Math.abs(deltaY)>Math.abs(deltaX)){advanceDetail(deltaY<0?1:-1)}},{passive:true});
+    let detailTouchStartX=0,detailTouchStartY=0,detailTouchLocked=false;
+    detailGallery.addEventListener('touchstart',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];detailTouchStartX=touch.clientX;detailTouchStartY=touch.clientY;detailTouchLocked=false},{passive:false});
+    detailGallery.addEventListener('touchmove',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];const deltaX=touch.clientX-detailTouchStartX;const deltaY=touch.clientY-detailTouchStartY;if(Math.abs(deltaY)>Math.abs(deltaX)&&Math.abs(deltaY)>8){detailTouchLocked=true;e.preventDefault()}},{passive:false});
+    detailGallery.addEventListener('touchend',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];const deltaX=touch.clientX-detailTouchStartX;const deltaY=touch.clientY-detailTouchStartY;if(detailTouchLocked&&Math.abs(deltaY)>36&&Math.abs(deltaY)>Math.abs(deltaX)){advanceDetail(deltaY<0?1:-1)}},{passive:false});
     window.addEventListener('resize',()=>{if(detail.classList.contains('show'))positionDetailCards()});
     setActive(0);
     let wheelQueue=0, wheelTimer=null;
