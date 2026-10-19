@@ -73,7 +73,7 @@
     .modal-cover { height:100%; width:100%; object-fit:cover; display:block; transition:opacity .4s ease; }
     .detail { position:absolute; inset:0; display:flex; flex-direction:column; background:transparent; opacity:0; transform:translateY(20px); pointer-events:none; transition:opacity .5s ease, transform .5s var(--ease); }
     .detail.show { opacity:1; transform:translateY(0); pointer-events:auto; }
-    .detail-gallery { position:absolute; inset:0; overflow:hidden; perspective:1100px; }
+    .detail-gallery { position:absolute; inset:0; overflow:hidden; perspective:1100px; touch-action:none; }
     .detail-dots { position:absolute; z-index:4; right:28px; top:50%; display:flex; flex-direction:column; align-items:center; gap:11px; transform:translateY(-50%); }
     .detail-dot { width:6px; height:6px; padding:0; border:0; border-radius:50%; background:#cfcfcf; cursor:pointer; transition:background .3s ease, transform .3s ease, opacity .3s ease; opacity:.9; }
     .detail-dot.is-active { background:#111; transform:scale(1.12); opacity:1; }
@@ -189,6 +189,9 @@
     function advanceDetail(direction){if(!detailCards.length)return;detailIndex=(detailIndex+direction+detailCards.length)%detailCards.length;ensureDetailImages();positionDetailCards(true);updateDetailDots();clearTimeout(detailFadeTimer);detailFadeTimer=setTimeout(()=>positionDetailCards(false),780)}
     function consumeDetailWheel(){if(Math.abs(detailQueue)<12){detailQueue=0;detailTimer=null;return}const direction=detailQueue>0?1:-1;detailQueue=0;advanceDetail(direction);detailTimer=setTimeout(consumeDetailWheel,220)}
     detail.addEventListener('wheel',e=>{if(!detail.classList.contains('show'))return;e.preventDefault();detailQueue+=e.deltaY;if(!detailTimer)consumeDetailWheel()},{passive:false});
+    let detailTouchStartX=0,detailTouchStartY=0;
+    detail.addEventListener('touchstart',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];detailTouchStartX=touch.clientX;detailTouchStartY=touch.clientY},{passive:true});
+    detail.addEventListener('touchend',e=>{if(!detail.classList.contains('show'))return;const touch=e.changedTouches[0];const deltaX=touch.clientX-detailTouchStartX;const deltaY=touch.clientY-detailTouchStartY;if(Math.abs(deltaY)>36&&Math.abs(deltaY)>Math.abs(deltaX)){advanceDetail(deltaY<0?1:-1)}},{passive:true});
     window.addEventListener('resize',()=>{if(detail.classList.contains('show'))positionDetailCards()});
     setActive(0);
     let wheelQueue=0, wheelTimer=null;
