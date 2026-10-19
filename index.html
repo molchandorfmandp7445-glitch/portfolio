@@ -145,6 +145,32 @@
     /* cursor parallax belongs to the whole active card, not its image */
     .card { left:50%; top:50%; translate:var(--mx) var(--my); will-change:transform,translate,opacity; transition:translate .1s ease-out, transform .9s var(--ease), opacity .65s ease, box-shadow .45s var(--ease), filter .5s ease; }
     .card img { transform:scale(1.02); transition:opacity .82s var(--ease), filter .6s ease; }
+    @media (max-width:600px){
+      html,body{overflow-x:hidden}
+      .hero{min-height:100svh;overflow:hidden;padding:88px 19px 24px}
+      .intro{left:19px;top:37%;width:calc(100vw - 38px);max-width:none;transform:translateY(-50%)}
+      h1{font-size:clamp(30px,8.8vw,42px);line-height:.98}
+      .contact-actions{margin-top:38px;gap:12px}
+      .gallery{right:-5vw;top:60%;width:76vw;height:58vh;min-height:0}
+      .modal:not(.detail-open){padding:12px}
+      .modal-card:not(.detail-open){width:92vw;height:80dvh}
+      .modal-card:not(.detail-open) .modal-cover{object-fit:contain;background:#e8e6e1}
+      .profile{padding:72px 20px 36px;overflow-y:auto;overflow-x:hidden}
+      .profile-layout{display:flex;flex-direction:column-reverse;gap:24px;min-width:0;width:100%}
+      .profile-content{width:100%;min-width:0;padding-top:0}
+      .profile-portrait{width:min(62vw,260px);height:auto;align-self:center;margin-top:8px}
+      .profile-name{font-size:34px;line-height:1.05;margin-bottom:18px}
+      .profile-facts{width:100%;max-width:100%;grid-template-columns:max-content minmax(0,1fr);gap:5px 14px;font-size:15px;line-height:1.5}
+      .profile-tabs{width:100%;max-width:100%;margin:38px 0 26px;font-size:15px;letter-spacing:-.04em;overflow-x:auto;overflow-y:hidden}
+      .profile-tabs button:not(:last-child)::after{margin:0 5px}
+      .profile-section-title{font-size:20px;gap:9px;margin-bottom:14px;white-space:nowrap}
+      .profile-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px;margin:10px 0;font-size:12px;line-height:1.45;min-width:0}
+      .profile-row span{min-width:0;overflow-wrap:anywhere}
+      .profile-row span:nth-child(3){grid-column:1 / -1;text-align:left}
+      .profile-description{font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+      .profile-section{margin-bottom:24px;min-width:0}
+      .profile-close{top:12px;right:16px;width:42px;height:42px;font-size:24px}
+    }
   </style>
 </head>
 <body>
