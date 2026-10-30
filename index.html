@@ -17,7 +17,7 @@
     .nav button { border:0; background:none; padding:3px 0; cursor:pointer; border-bottom:1px solid transparent; }
     .nav button:hover { border-color:var(--ink); }
     body.profile-mode .nav { opacity:0; pointer-events:none; }
-    .hero { min-height:100vh; padding:126px 32px 34px; position:relative; overflow:hidden; background:#f7f7f7; }
+     .hero { min-height:100vh; padding:126px 32px 34px; position:relative; overflow:hidden; background:#f7f7f7; }
     .intro { position:absolute; left:18%; top:52%; transform:translateY(-50%); width:min(36vw,500px); max-width:500px; }
     .eyebrow { margin:0 0 12px; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
     h1 { margin:0; max-width:none; font-size:clamp(32px,3.7vw,64px); line-height:.96; letter-spacing:0; font-weight:700; color:#111; }
@@ -45,6 +45,12 @@
     .home-dot { width:6px; height:6px; padding:0; border:0; border-radius:50%; background:#d0d0d0; cursor:pointer; transition:background .25s ease, transform .25s ease; }
     .home-dot.is-active { background:#111; transform:scale(1.08); }
     body.profile-mode .home-dots { opacity:0; pointer-events:none; }
+      .hero.is-rippling { filter:url(#homeLiquidRipple); }
+      #homeRippleGlints { position:fixed; inset:0; z-index:22; width:100vw; height:100vh; pointer-events:none; mix-blend-mode:screen; }
+      #homeBreathRippleGlints { position:absolute; inset:0; z-index:9; width:100%; height:100%; pointer-events:none; mix-blend-mode:screen; }
+      .gallery { z-index:10; }
+     body.profile-mode #homeRippleGlints { display:none; }
+      body.profile-mode #homeBreathRippleGlints { display:none; }
     body.profile-mode .gallery { transform:translate(120vw,-50%); opacity:0; pointer-events:none; }
     body.profile-mode .intro { position:relative; left:auto; top:auto; z-index:auto; transform:none; opacity:1; margin:0 0 12vh; transition:none; transform-origin:left center; pointer-events:auto; }
     body.profile-mode .contact-actions { margin-top:58px; }
@@ -55,13 +61,16 @@
     .card { --slot:0; --stack-y:0px; --scale:1; --opacity:1; --face-opacity:1; --rotate:0deg; --fold:0deg; --mx:0px; --my:0px; position:absolute; left:50%; top:50%; width:clamp(250px,19vw,480px); aspect-ratio:1; height:auto; border:0; border-radius:28px; padding:0; background:#e7e7e7; overflow:hidden; cursor:pointer; transform:translate(-50%,-50%) translateY(var(--stack-y)) scale(var(--scale)) rotate(var(--rotate)) rotateX(var(--fold)); transform-origin:center center; transform-style:preserve-3d; backface-visibility:hidden; will-change:transform,opacity; opacity:var(--opacity); transition:transform .9s var(--ease), opacity .65s ease, box-shadow .45s var(--ease), filter .5s ease; box-shadow:0 12px 32px rgba(0,0,0,.08); }
     .card.is-active { z-index:10; box-shadow:0 24px 60px rgba(0,0,0,.16); transform-origin:center center; scale:1; animation:card-breathe 3.6s cubic-bezier(.42,0,.58,1) infinite; }
     @keyframes card-breathe { 0%,100%{scale:1} 50%{scale:1.018} }
+    /* Soft liquid rings pulse from beneath the active card at both breathing extremes. */
+    .card.is-active { animation:card-breathe 3.6s cubic-bezier(.42,0,.58,1) infinite, card-ripple-clock 1.8s steps(1,end) infinite; animation-delay:.8s,0s; }
+    @keyframes card-ripple-clock { from { outline-offset:0px; } to { outline-offset:0px; } }
     @media (prefers-reduced-motion:reduce){ .card.is-active{animation:none} }
     .card:not(.is-active) { box-shadow:none; background:#e5e5e5; }
     .card img { width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.9); opacity:var(--face-opacity); transform:translate(var(--mx),var(--my)) scale(1.02); transition:transform .12s ease-out, opacity .82s var(--ease), filter .6s ease; }
     .card picture, .skill-icon picture { display:block; width:100%; height:100%; }
     .detail-card picture { display:block; }
     .card .shade, .card .card-meta { opacity:var(--face-opacity); transition:opacity .82s var(--ease); }
-    .card:hover { z-index:12; box-shadow:0 24px 60px rgba(0,0,0,.2); animation:none; scale:1; }
+    .card:not(.is-active):hover { z-index:12; box-shadow:0 24px 60px rgba(0,0,0,.2); animation:none; scale:1; }
     @keyframes sway { 0%,100%{ transform:translateY(-3%) rotate(-2.7deg); } 50%{ transform:translateY(-3%) rotate(2.7deg); } }
     .card:hover img { filter:saturate(.9); }
     .shade { position:absolute; inset:0; background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.64)); pointer-events:none; }
@@ -223,6 +232,8 @@
     <nav class="home-dots" id="homeDots" aria-label="首页项目导航"></nav>
     <footer class="footer"><span>Scroll to explore · Hover to feel</span><span>Works / 08</span></footer>
   </main>
+  <svg class="liquid-ripple-filter" aria-hidden="true" width="0" height="0" style="position:fixed;left:-2px;top:-2px;overflow:hidden"><defs><filter id="homeLiquidRipple" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB"><feImage id="homeRippleMap" x="-12%" y="-12%" width="124%" height="124%" preserveAspectRatio="none" result="rippleMap"/><feDisplacementMap id="homeRippleDisplacement" in="SourceGraphic" in2="rippleMap" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <canvas id="homeRippleGlints" aria-hidden="true"></canvas>
   <section class="profile" id="profile"><button class="profile-close" id="profileClose" aria-label="返回首页">×</button><div class="profile-layout"><div class="profile-content"><div class="profile-name">李健豪</div><div class="profile-facts"><strong>年龄/Birthday:</strong><span>2002.10.10</span><strong>意向岗位:</strong><span>交互 / 工业设计师</span></div><div class="profile-tabs"><span>个人经历</span><span>主要项目</span><span>职业技能</span><span>竞赛获奖</span><span>自我评价</span></div><div class="profile-section"><div class="profile-section-title">教育经历 / Education</div><div class="profile-row"><span><img class="profile-logo" src="assets/profile/shanda.webp" alt=""/>山东大学</span><span>2020.09 – 2024.06</span><span>产品设计 / 本科</span></div><div class="profile-row"><span><img class="profile-logo" src="assets/profile/shanda.webp" alt=""/>山东大学</span><span>2024.09 – 至今</span><span>工业设计工程 / 硕士</span></div><p class="profile-description">本科为机械学院工业设计系，面试第一保研至机械学院工业设计研究所。本科期间总绩点88.03（专业第6，6/41），曾担任山东大学学生在线组织核心成员、社管会秘书处成员；硕士期间总绩点91.31（专业第2，2/11），担任班级学习委员、机械学院在职研究生办公室助管、山东大学融媒体中心成员、交互研究所工作室负责人。</p></div><div class="profile-section"><div class="profile-section-title">实践经历 / Experience</div><div class="profile-row"><span><span class="profile-logo profile-logo-empty"></span>此山文化</span><span>2022.03 – 2023.06</span><span>文创设计师</span></div><div class="profile-row"><span><img class="profile-logo" src="assets/profile/yueda.webp" alt=""/>悦达汽车科创园</span><span>2025.07 – 2025.10</span><span>用户体验实习生</span></div><div class="profile-row"><span><img class="profile-logo" src="assets/profile/hyundai.webp" alt=""/>现代汽车研发中心</span><span>2026.07 – 2026.10</span><span>UI设计师</span></div></div></div><div class="profile-portrait"><img src="assets/profile/photo.webp" alt="李健豪个人照片"/><div class="profile-photo-caption">Click to explore</div></div></div></section>
   <div class="modal" id="modal"><div class="modal-card"><button class="modal-close" id="modalClose">×</button><img class="modal-cover" id="modalCover" alt=""/><div class="hint" id="modalHint" aria-label="点击图片"></div><section class="detail" id="detail"><div class="detail-gallery" id="detailGallery"></div><div class="detail-dots" id="detailDots" aria-label="项目图片页码"></div></section></div></div>
   <section class="memory-page" id="memoryPage" aria-label="个人照片时间轴"><svg class="memory-filters" aria-hidden="true" width="0" height="0"><defs><filter id="memory-paper-bend" x="-45%" y="-45%" width="190%" height="190%"><feTurbulence type="fractalNoise" baseFrequency=".0008 .0012" numOctaves="1" seed="11" result="paperArc"/><feDisplacementMap in="SourceGraphic" in2="paperArc" scale="110" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg><div class="memory-topbar"><span>/ PERSONAL EXPERIENCE</span><button class="memory-close" id="memoryClose" aria-label="返回个人页面">×</button></div><div class="memory-scene" id="memoryScene"></div><div class="memory-date"><div class="memory-year" id="memoryYear"></div><div class="memory-month" id="memoryMonth"></div></div><div class="memory-hint">滚动 · 双指缩放浏览照片</div></section>
@@ -553,6 +564,172 @@
     }, { passive:false });
     document.querySelector('#memoryClose')?.addEventListener('click', closeMemoryPage);
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && memoryPage.classList.contains('open')) closeMemoryPage(); });
+
+    (() => {
+      const hero = document.querySelector('.hero');
+      const mapImage = document.querySelector('#homeRippleMap');
+      const displacement = document.querySelector('#homeRippleDisplacement');
+      const glints = document.querySelector('#homeRippleGlints');
+      const glintContext = glints?.getContext('2d');
+      const underCardGlints = document.createElement('canvas');
+      underCardGlints.id = 'homeBreathRippleGlints';
+      hero?.appendChild(underCardGlints);
+      const underCardContext = underCardGlints.getContext('2d');
+      const mapCanvas = document.createElement('canvas');
+      const mapContext = mapCanvas.getContext('2d', { willReadFrequently:true });
+      if (!hero || !mapImage || !displacement || !glintContext || !underCardContext || !mapContext) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const ripples = [];
+      const maxRipples = 5;
+      let frame = 0;
+      let previousFrame = 0;
+      let bounds = null;
+      let mapPixels = null;
+      const now = () => performance.now() / 1000;
+      const spawnHomeRipple = (clientX,clientY,underCard=false) => {
+        if (document.body.classList.contains('profile-mode') || modal.classList.contains('open') || memoryPage.classList.contains('open') || reduceMotion.matches) return;
+        if(!bounds)resizeRippleCanvases();
+        ripples.push({ x:clientX-bounds.left, y:clientY-bounds.top, started:now(), underCard });
+        if (ripples.length > maxRipples) ripples.shift();
+        hero.classList.add('is-rippling');
+        if (!frame) frame = requestAnimationFrame(animateRipples);
+      };
+      const rippleAtCardBase = card => {
+        const rect=card.getBoundingClientRect();
+        const offset=Math.min(24,rect.width*.04);
+        spawnHomeRipple(rect.left+rect.width*.5-offset,window.innerHeight*.5-offset-48,true);
+      };
+      cards.forEach(card => {
+        card.addEventListener('animationstart',event=>{ if(event.animationName==='card-ripple-clock') rippleAtCardBase(card); });
+        card.addEventListener('animationiteration',event=>{ if(event.animationName==='card-ripple-clock') rippleAtCardBase(card); });
+      });
+      const resizeRippleCanvases = () => {
+        bounds = hero.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.15);
+        glints.width = Math.max(1, Math.round(window.innerWidth * dpr));
+        glints.height = Math.max(1, Math.round(window.innerHeight * dpr));
+        glintContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+        underCardGlints.width = Math.max(1, Math.round(bounds.width * dpr));
+        underCardGlints.height = Math.max(1, Math.round(bounds.height * dpr));
+        underCardContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // A compact displacement map keeps the SVG filter responsive while preserving the liquid wave shape.
+        mapCanvas.width = Math.max(144, Math.min(200, Math.round(bounds.width * .18)));
+        mapCanvas.height = Math.max(108, Math.min(150, Math.round(bounds.height * .18)));
+        mapPixels = mapContext.createImageData(mapCanvas.width, mapCanvas.height);
+      };
+      const paintDisplacementMap = time => {
+        const width = mapCanvas.width, height = mapCanvas.height, pixels = mapPixels.data;
+        const scaleX = bounds.width / width, scaleY = bounds.height / height;
+        const activeRipples = ripples.map(ripple => ({ ...ripple, age:time-ripple.started }));
+        const activeCardRect = cards[active]?.getBoundingClientRect();
+        const cardBottom = activeCardRect ? activeCardRect.bottom-bounds.top : -1;
+        const upperCardRects = cards.flatMap((card,index)=>{
+          let offset=index-active;
+          if(offset>works.length/2)offset-=works.length;
+          if(offset<-works.length/2)offset+=works.length;
+          if(offset>=0 || offset<-2)return [];
+          const rect=card.getBoundingClientRect();
+          return [{left:rect.left-bounds.left,top:rect.top-bounds.top,right:rect.right-bounds.left,bottom:rect.bottom-bounds.top}];
+        });
+        for (let py=0; py<height; py++) for (let px=0; px<width; px++) {
+          const x=(px+.5)*scaleX, y=(py+.5)*scaleY; let dx=0,dy=0;
+          for (const ripple of activeRipples) {
+            if (ripple.underCard && y<=cardBottom && !upperCardRects.some(rect=>x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom)) continue;
+            const ox=x-ripple.x, oy=y-ripple.y, distance=Math.max(1,Math.hypot(ox,oy));
+            const front=ripple.age*410, offset=distance-front;
+            const envelope=Math.exp(-Math.abs(offset)/54);
+            const decay=Math.exp(-ripple.age/1.5)/(1+front/470);
+            const wave=Math.sin(offset*.105)*envelope*decay*1.18;
+            dx+=ox/distance*wave; dy+=oy/distance*wave;
+          }
+          const index=(py*width+px)*4;
+          pixels[index]=Math.max(0,Math.min(255,128+dx*104));
+          pixels[index+1]=Math.max(0,Math.min(255,128+dy*104));
+          pixels[index+2]=128; pixels[index+3]=255;
+        }
+        mapContext.putImageData(mapPixels,0,0);
+        const url=mapCanvas.toDataURL('image/png');
+        mapImage.setAttribute('href',url);
+        mapImage.setAttributeNS('http://www.w3.org/1999/xlink','href',url);
+      };
+      const paintGlints = (context,time,underCard=false) => {
+        const width=underCard?bounds.width:window.innerWidth, height=underCard?bounds.height:window.innerHeight;
+        context.clearRect(0,0,width,height);
+        context.save(); context.globalCompositeOperation='lighter';
+        if (underCard) {
+          const cardRect=cards[active]?.getBoundingClientRect();
+          const clipTop=cardRect?Math.max(0,cardRect.bottom-bounds.top):0;
+          context.beginPath(); context.rect(0,clipTop,bounds.width,Math.max(0,bounds.height-clipTop)); context.clip();
+        }
+        for (const ripple of ripples) {
+          if(Boolean(ripple.underCard)!==underCard) continue;
+          const age=time-ripple.started, radius=age*410;
+          const decay=Math.exp(-age/1.42)/(1+radius/480);
+          const x=underCard?ripple.x:bounds.left+ripple.x, y=underCard?ripple.y:bounds.top+ripple.y;
+          for(let ring=0;ring<3;ring++){
+            const r=radius-ring*19, width=8+ring*2; if(r<2)continue;
+            const gradient=context.createRadialGradient(x,y,Math.max(0,r-width),x,y,r+width);
+            gradient.addColorStop(0,'rgba(185,238,255,0)');
+            gradient.addColorStop(.43,`rgba(220,249,255,${decay*(.08-ring*.012)})`);
+            gradient.addColorStop(.52,`rgba(255,255,255,${decay*(.2-ring*.025)})`);
+            gradient.addColorStop(.61,`rgba(163,222,244,${decay*(.09-ring*.012)})`);
+            gradient.addColorStop(1,'rgba(190,235,255,0)');
+            context.fillStyle=gradient; context.fillRect(x-r-width,y-r-width,(r+width)*2,(r+width)*2);
+          }
+        }
+        if (!underCard) {
+          const upperCards=cards.filter((card,index)=>{
+            let offset=index-active;
+            if(offset>works.length/2)offset-=works.length;
+            if(offset<-works.length/2)offset+=works.length;
+            return offset<0 && offset>=-2;
+          });
+          if (upperCards.length && ripples.some(ripple=>ripple.underCard)) {
+            context.save(); context.beginPath();
+            for (const card of upperCards) {
+              const rect=card.getBoundingClientRect();
+              if (typeof context.roundRect==='function') context.roundRect(rect.left,rect.top,rect.width,rect.height,Math.min(28,rect.width*.07));
+              else context.rect(rect.left,rect.top,rect.width,rect.height);
+            }
+            context.clip();
+            for (const ripple of ripples) {
+              if (!ripple.underCard) continue;
+              const age=time-ripple.started, radius=age*410;
+              const decay=Math.exp(-age/1.42)/(1+radius/480);
+              const x=bounds.left+ripple.x, y=bounds.top+ripple.y;
+              for(let ring=0;ring<3;ring++){
+                const r=radius-ring*19, ringWidth=8+ring*2; if(r<2)continue;
+                const gradient=context.createRadialGradient(x,y,Math.max(0,r-ringWidth),x,y,r+ringWidth);
+                gradient.addColorStop(0,'rgba(185,238,255,0)');
+                gradient.addColorStop(.43,`rgba(220,249,255,${decay*(.08-ring*.012)})`);
+                gradient.addColorStop(.52,`rgba(255,255,255,${decay*(.2-ring*.025)})`);
+                gradient.addColorStop(.61,`rgba(163,222,244,${decay*(.09-ring*.012)})`);
+                gradient.addColorStop(1,'rgba(190,235,255,0)');
+                context.fillStyle=gradient; context.fillRect(x-r-ringWidth,y-r-ringWidth,(r+ringWidth)*2,(r+ringWidth)*2);
+              }
+            }
+            context.restore();
+          }
+        }
+        context.restore();
+      };
+      const animateRipples = timestamp => {
+        if(timestamp-previousFrame<42){frame=requestAnimationFrame(animateRipples);return;}
+        previousFrame=timestamp; const time=now();
+        for(let i=ripples.length-1;i>=0;i--)if(time-ripples[i].started>2.65)ripples.splice(i,1);
+        if(!ripples.length){glintContext.clearRect(0,0,window.innerWidth,window.innerHeight);underCardContext.clearRect(0,0,bounds.width,bounds.height);hero.classList.remove('is-rippling');displacement.setAttribute('scale','0');frame=0;return;}
+        paintDisplacementMap(time); paintGlints(glintContext,time,false); paintGlints(underCardContext,time,true);
+        displacement.setAttribute('scale',String(Math.min(78,58+ripples.length*1.6)));
+        frame=requestAnimationFrame(animateRipples);
+      };
+
+      hero.addEventListener('pointerdown', event => {
+        if (event.button !== 0 || event.pointerType !== 'mouse' || reduceMotion.matches) return;
+        spawnHomeRipple(event.clientX,event.clientY);
+      }, { passive:true });
+      window.addEventListener('resize', resizeRippleCanvases, { passive:true });
+      resizeRippleCanvases();
+    })();
   </script>
 </body>
 </html>
