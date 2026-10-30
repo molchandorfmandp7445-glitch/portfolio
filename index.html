@@ -51,6 +51,7 @@
       .gallery { z-index:10; }
      body.profile-mode #homeRippleGlints { display:none; }
       body.profile-mode #homeBreathRippleGlints { display:none; }
+      @media (max-width:1024px), (pointer:coarse) { #homeBreathRippleGlints { display:none !important; } }
     body.profile-mode .gallery { transform:translate(120vw,-50%); opacity:0; pointer-events:none; }
     body.profile-mode .intro { position:relative; left:auto; top:auto; z-index:auto; transform:none; opacity:1; margin:0 0 12vh; transition:none; transform-origin:left center; pointer-events:auto; }
     body.profile-mode .contact-actions { margin-top:58px; }
@@ -579,6 +580,7 @@
       const mapContext = mapCanvas.getContext('2d', { willReadFrequently:true });
       if (!hero || !mapImage || !displacement || !glintContext || !underCardContext || !mapContext) return;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const disableHomeRipples = window.matchMedia('(max-width:1024px), (pointer:coarse)');
       const ripples = [];
       const maxRipples = 5;
       let frame = 0;
@@ -587,7 +589,7 @@
       let mapPixels = null;
       const now = () => performance.now() / 1000;
       const spawnHomeRipple = (clientX,clientY,underCard=false) => {
-        if (document.body.classList.contains('profile-mode') || modal.classList.contains('open') || memoryPage.classList.contains('open') || reduceMotion.matches) return;
+        if ((underCard && disableHomeRipples.matches) || document.body.classList.contains('profile-mode') || modal.classList.contains('open') || memoryPage.classList.contains('open') || reduceMotion.matches) return;
         if(!bounds)resizeRippleCanvases();
         ripples.push({ x:clientX-bounds.left, y:clientY-bounds.top, started:now(), underCard });
         if (ripples.length > maxRipples) ripples.shift();
@@ -639,7 +641,7 @@
             const front=ripple.age*410, offset=distance-front;
             const envelope=Math.exp(-Math.abs(offset)/54);
             const decay=Math.exp(-ripple.age/1.5)/(1+front/470);
-            const wave=Math.sin(offset*.105)*envelope*decay*1.18;
+            const wave=Math.sin(offset*.105)*envelope*decay*1.18*(ripple.underCard ? .55 : 1);
             dx+=ox/distance*wave; dy+=oy/distance*wave;
           }
           const index=(py*width+px)*4;
@@ -664,7 +666,7 @@
         for (const ripple of ripples) {
           if(Boolean(ripple.underCard)!==underCard) continue;
           const age=time-ripple.started, radius=age*410;
-          const decay=Math.exp(-age/1.42)/(1+radius/480);
+          const decay=Math.exp(-age/1.42)/(1+radius/480)*(ripple.underCard ? .58 : 1);
           const x=underCard?ripple.x:bounds.left+ripple.x, y=underCard?ripple.y:bounds.top+ripple.y;
           for(let ring=0;ring<3;ring++){
             const r=radius-ring*19, width=8+ring*2; if(r<2)continue;
@@ -695,7 +697,7 @@
             for (const ripple of ripples) {
               if (!ripple.underCard) continue;
               const age=time-ripple.started, radius=age*410;
-              const decay=Math.exp(-age/1.42)/(1+radius/480);
+              const decay=Math.exp(-age/1.42)/(1+radius/480)*.58;
               const x=bounds.left+ripple.x, y=bounds.top+ripple.y;
               for(let ring=0;ring<3;ring++){
                 const r=radius-ring*19, ringWidth=8+ring*2; if(r<2)continue;
@@ -724,7 +726,7 @@
       };
 
       hero.addEventListener('pointerdown', event => {
-        if (event.button !== 0 || event.pointerType !== 'mouse' || reduceMotion.matches) return;
+        if ((event.pointerType==='mouse' && event.button!==0) || event.isPrimary===false || reduceMotion.matches) return;
         spawnHomeRipple(event.clientX,event.clientY);
       }, { passive:true });
       window.addEventListener('resize', resizeRippleCanvases, { passive:true });
