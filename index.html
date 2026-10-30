@@ -60,6 +60,7 @@
     body.profile-mode #identityProfile::after { content:''; position:absolute; left:50%; top:50%; width:11px; height:11px; border-left:2.5px solid #fff; border-bottom:2.5px solid #fff; transform:translate(-35%,-50%) rotate(45deg); }
     body.profile-mode #identityProfile:hover { transform:rotate(360deg) translateY(-3px); }
     .card { --slot:0; --stack-y:0px; --scale:1; --opacity:1; --face-opacity:1; --rotate:0deg; --fold:0deg; --mx:0px; --my:0px; position:absolute; left:50%; top:50%; width:clamp(250px,19vw,480px); aspect-ratio:1; height:auto; border:0; border-radius:28px; padding:0; background:#e7e7e7; overflow:hidden; cursor:pointer; transform:translate(-50%,-50%) translateY(var(--stack-y)) scale(var(--scale)) rotate(var(--rotate)) rotateX(var(--fold)); transform-origin:center center; transform-style:preserve-3d; backface-visibility:hidden; will-change:transform,opacity; opacity:var(--opacity); transition:transform .9s var(--ease), opacity .65s ease, box-shadow .45s var(--ease), filter .5s ease; box-shadow:0 12px 32px rgba(0,0,0,.08); }
+    .card, .contact-actions button, .profile-portrait, .profile-portrait img, .modal:not(.detail-open) .modal-cover, .modal .detail-card img, .detail-image-fullscreen img { cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='16' fill='none' stroke='%23e5e5e5' stroke-opacity='.8' stroke-width='3'/%3E%3Ccircle cx='18' cy='18' r='14' fill='%23000000' fill-opacity='.38'/%3E%3C/svg%3E") 18 18, pointer; }
     .card.is-active { z-index:10; box-shadow:0 24px 60px rgba(0,0,0,.16); transform-origin:center center; scale:1; animation:card-breathe 3.6s cubic-bezier(.42,0,.58,1) infinite; }
     @keyframes card-breathe { 0%,100%{scale:1} 50%{scale:1.018} }
     /* Soft liquid rings pulse from beneath the active card at both breathing extremes. */
@@ -83,6 +84,7 @@
     .modal { position:fixed; inset:0; z-index:30; display:grid; place-items:center; padding:30px; background:rgba(15,15,15,.46); opacity:0; pointer-events:none; transition:opacity .45s ease; }
     .modal.open { opacity:1; pointer-events:auto; }
     .modal-card { position:relative; width:min(74vw,720px); height:min(82vh,820px); background:#e8e6e1; overflow:hidden; transform:scale(.93); transition:transform .6s var(--ease); }
+    .modal-card:not(.detail-open) { border-radius:20px; }
     .modal.open .modal-card { transform:scale(1); }
     .modal.detail-open { padding:0; background:#e8e6e1; touch-action:auto; overscroll-behavior:none; }
     .modal-card.detail-open { position:fixed; inset:0; width:100vw; height:100vh; transform:none !important; touch-action:auto; }
@@ -123,7 +125,9 @@
     .profile-tabs::-webkit-scrollbar { display:none; }
     .profile-tabs button { flex:0 0 auto; border:0; padding:0; background:transparent; color:#aaa; cursor:pointer; font:inherit; letter-spacing:inherit; transition:color .25s ease; }
     .profile-tabs button.is-active { color:#111; }
-    .profile-tabs button:not(:last-child)::after { content:' / '; color:#aaa; margin:0 10px; }
+    .profile-tabs button > span { position:relative; display:inline-block; }
+    .profile-tabs button.is-active > span::after { content:''; position:absolute; z-index:1; right:-12px; bottom:3px; width:11px; height:11px; border-radius:50%; background:#69c7f3; }
+    .profile-tabs button:not(:last-child)::after { content:' / '; color:#aaa; margin:0 15px; }
     .profile-panels { width:100%; }
     .profile-panel { display:none; animation:profile-panel-in .45s var(--ease); }
     .profile-panel.is-active { display:block; }
@@ -346,7 +350,7 @@
         profileHero.insertBefore(profileIntro, profileHero.firstChild);
       }
     };
-    const profileTabs = Array.from(document.querySelectorAll('.profile-tabs span')).map(tab => { const button = document.createElement('button'); button.type = 'button'; button.textContent = tab.textContent; tab.replaceWith(button); return button; });
+    const profileTabs = Array.from(document.querySelectorAll('.profile-tabs > span')).map(tab => { const button = document.createElement('button'); button.type = 'button'; const label = document.createElement('span'); label.textContent = tab.textContent; button.appendChild(label); tab.replaceWith(button); return button; });
     const profileSections = Array.from(document.querySelectorAll('.profile-section'));
     const profilePanels = document.createElement('div');
     profilePanels.className = 'profile-panels';
